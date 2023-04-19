@@ -9,6 +9,10 @@
 import AppLayoutHeader from "./AppLayoutHeader.vue";
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.app_layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
 </style>
