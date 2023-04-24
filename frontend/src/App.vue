@@ -4,7 +4,7 @@
     :filters="state.filters"
     @update-tasks="updateTasks"
   >
-    <home-view
+    <router-view
       :tasks="filteredTasks"
       :filters="state.filters"
       @update-tasks="updateTasks"
