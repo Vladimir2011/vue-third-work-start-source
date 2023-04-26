@@ -2,15 +2,20 @@
   <main class="content">
     <section class="desk">
       <!--      Отображение дочерних маршрутов-->
-      <router-view :tasks="props.tasks" />
+      <router-view
+              :tasks="props.tasks"
+              @add-task="$emit('addTask', $event)"
+              @edit-task="$emit('editTask', $event)"
+              @delete-task="$emit('deleteTask', $event)"
+      />
       <!--      Шапка доски-->
       <div class="desk__header">
         <h1 class="desk__title">Design Coffee Lab</h1>
         <!--        Добавили кнопку для добавления новой колонки-->
         <button
-          class="desk__add"
-          type="button"
-          @click="addColumn"
+                class="desk__add"
+                type="button"
+                @click="addColumn"
         >
           Добавить столбец
         </button>
@@ -19,22 +24,22 @@
             <!--            Список пользователей-->
             <ul class="user-filter">
               <li
-                v-for="user in users"
-                :key="user.id"
-                :title="user.name"
-                class="user-filter__item"
-                :class="{ active: filters.users.some(id => id === user.id) }"
-                @click="$emit(
-              'applyFilters',
-              { item: user.id, entity: 'users' }
-                )"
+                      v-for="user in users"
+                      :key="user.id"
+                      :title="user.name"
+                      class="user-filter__item"
+                      :class="{ active: filters.users.some(id => id === user.id) }"
+                      @click="$emit(
+                    'applyFilters',
+                    { item: user.id, entity: 'users' }
+                  )"
               >
                 <a class="user-filter__button">
                   <img
-                    :src="getImage(user.avatar)"
-                    alt="Аватар юзера"
-                    width="24"
-                    height="24"
+                          :src="getImage(user.avatar)"
+                          alt="Аватар юзера"
+                          width="24"
+                          height="24"
                   />
                 </a>
               </li>
@@ -44,19 +49,19 @@
             <!--            Список статусов-->
             <ul class="meta-filter">
               <li
-                v-for="({ value, label }) in STATUSES"
-                :key="value"
-                class="meta-filter__item"
-                :class="{ active: filters.statuses.some(s => s === value) }"
-                @click="$emit(
-            'applyFilters',
-             { item: value, entity: 'statuses' }
-                )"
+                      v-for="({ value, label }) in STATUSES"
+                      :key="value"
+                      class="meta-filter__item"
+                      :class="{ active: filters.statuses.some(s => s === value) }"
+                      @click="$emit(
+                    'applyFilters',
+                    { item: value, entity: 'statuses' }
+                  )"
               >
                 <a
-                  class="meta-filter__status"
-                  :class="`meta-filter__status meta-filter__status--color meta-filter__status--${value}`"
-                  :title="label"
+                        class="meta-filter__status"
+                        :class="`meta-filter__status meta-filter__status--color meta-filter__status--${value}`"
+                        :title="label"
                 />
               </li>
             </ul>
@@ -67,19 +72,19 @@
       <div v-if="columns.length" class="desk__columns">
         <!--        Показываем колонки-->
         <desk-column
-          v-for="column in state.columns"
-          :key="column.id"
-          :column="column"
-          :tasks="props.tasks"
-          @update="updateColumn"
-          @delete="deleteColumn"
-          @update-tasks="$emit('updateTasks', $event)"
+                v-for="column in state.columns"
+                :key="column.id"
+                :column="column"
+                :tasks="props.tasks"
+                @update="updateColumn"
+                @delete="deleteColumn"
+                @update-tasks="$emit('updateTasks', $event)"
         />
       </div>
       <!--      Пустая доска-->
       <p
-        v-else
-        class="desk__emptiness"
+              v-else
+              class="desk__emptiness"
       >
         Пока нет ни одной колонки
       </p>
@@ -107,7 +112,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['applyFilters', 'updateTasks'])
+defineEmits(['applyFilters', 'updateTasks', 'addTask', 'editTask', 'deleteTask'])
 
 const state = reactive({ columns })
 
@@ -123,7 +128,7 @@ function updateColumn (column) {
 }
 
 function deleteColumn (id) {
-  state.columns = state.columns.filter(column => column.id !== id);
+  state.columns = state.columns.filter(column => column.id !== id)
 }
 </script>
 

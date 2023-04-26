@@ -1,11 +1,11 @@
 <template>
-  <div class="app_layout">
+  <div className="app_layout">
     <app-layout-header/>
-    <div class="content">
+    <div className="content">
       <app-layout-sidebar
-        :tasks="props.tasks"
-        :filters="props.filters"
-        @update-tasks="$emit('updateTasks', $event)"
+              :tasks="props.tasks"
+              :filters="props.filters"
+              @update-tasks="$emit('updateTasks', $event)"
       />
       <slot/>
     </div>
@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import AppLayoutHeader from "./AppLayoutHeader.vue";
+import AppLayoutHeader from './AppLayoutHeader.vue'
 import AppLayoutSidebar from './AppLayoutSidebar.vue'
 
 const props = defineProps({
@@ -40,13 +40,5 @@ defineEmits(['updateTasks'])
 .content {
   display: flex;
   flex-grow: 1;
-}
-</style>
-
-<style lang="scss" scoped>
-.app_layout {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
 }
 </style>

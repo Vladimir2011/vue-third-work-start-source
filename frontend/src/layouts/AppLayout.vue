@@ -21,7 +21,7 @@ watch(
       const component = await import(`./${meta.layout}.vue`)
       layout.value = component?.default || AppLayoutDefault
     } catch (e) {
-      // Если компонент не найден, добавляем шаблон по умолчанию
+      // Если компонент не найдет, добавляем шаблон по-умолчанию
       layout.value = AppLayoutDefault
     }
   }
