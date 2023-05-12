@@ -1,18 +1,14 @@
 <template>
   <div
-          class="task-card"
-          tabindex="0"
-          ref="dialog"
-          @click.self="closeDialog"
-          @keydown.esc="closeDialog"
+    class="task-card"
+    tabindex="0"
+    ref="dialog"
+    @click.self="closeDialog"
+    @keydown.esc="closeDialog"
   >
     <section class="task-card__wrapper">
       <!--Закрытие задачи-->
-      <button
-              class="task-card__close"
-              type="button"
-              @click="closeDialog"
-      />
+      <button class="task-card__close" type="button" @click="closeDialog" />
       <!--Шапка задачи-->
       <div class="task-card__block">
         <div class="task-card__row">
@@ -22,11 +18,13 @@
           </h1>
           <!--Кнопка редактирования задачи-->
           <a
-                  class="task-card__edit"
-                  @click="router.push({
+            class="task-card__edit"
+            @click="
+              router.push({
                 name: 'TaskEdit',
                 params: { id: $route.params.id }
-              })"
+              })
+            "
           >
             Редактировать задачу
           </a>
@@ -43,14 +41,8 @@
           <li v-if="task && task.user">
             Участник:
             <div class="task-card__participant">
-              <button
-                      type="button"
-                      class="task-card__user"
-              >
-                <img
-                        :src="getImage(task.user.avatar)"
-                        :alt="task.user.name"
-                />
+              <button type="button" class="task-card__user">
+                <img :src="getImage(task.user.avatar)" :alt="task.user.name" />
                 {{ task.user.name }}
               </button>
             </div>
@@ -58,10 +50,7 @@
           <!--Срок выполнения-->
           <li v-if="dueDate">
             Срок:
-            <button
-                    type="button"
-                    class="task-card__date-link"
-            >
+            <button type="button" class="task-card__date-link">
               {{ dueDate }}
             </button>
           </li>
@@ -69,63 +58,37 @@
       </div>
       <!--Описание задачи-->
       <div class="task-card__block">
-        <div
-                v-if="task && task.description"
-                class="task-card__description"
-        >
-          <h4 class="task-card__title">
-            Описание
-          </h4>
+        <div v-if="task && task.description" class="task-card__description">
+          <h4 class="task-card__title">Описание</h4>
           <p>{{ task.description }}</p>
         </div>
       </div>
       <!--Дополнительная ссылка-->
-      <div
-              v-if="task && task.url"
-              class="task-card__block task-card__links"
-      >
-        <h4 class="task-card__title">
-          Ссылки
-        </h4>
+      <div v-if="task && task.url" class="task-card__block task-card__links">
+        <h4 class="task-card__title">Ссылки</h4>
 
         <div class="task-card__links-item">
-          <a
-                  :href="task.url"
-                  target="_blank"
-          >
+          <a :href="task.url" target="_blank">
             {{ task.urlDescription || 'ссылка' }}
           </a>
         </div>
       </div>
       <!--Чеклист-->
-      <div
-              v-if="task && task.ticks && task.ticks.length"
-              class="task-card__block"
-      >
-        <task-card-view-ticks-list
-                :ticks="task.ticks"
-                disabled
-        />
+      <div v-if="task && task.ticks && task.ticks.length" class="task-card__block">
+        <task-card-view-ticks-list :ticks="task.ticks" disabled />
       </div>
       <!--Метки-->
-      <div
-              v-if="task && task.tags && task.tags.length"
-              class="task-card__block"
-      >
-        <h4 class="task-card__title">
-          Метки
-        </h4>
-        <task-card-tags
-                :tags="task.tags"
-        />
+      <div v-if="task && task.tags && task.tags.length" class="task-card__block">
+        <h4 class="task-card__title">Метки</h4>
+        <task-card-tags :tags="task.tags" />
       </div>
       <!--Комментарии-->
       <task-card-view-comments
-              v-if="task"
-              class="task-card__comments"
-              :comments="task.comments || []"
-              :task-id="task.id"
-              @create-new-comment="addCommentToList"
+        v-if="task"
+        class="task-card__comments"
+        :comments="task.comments || []"
+        :task-id="task.id"
+        @create-new-comment="addCommentToList"
       />
     </section>
   </div>
@@ -139,16 +102,12 @@ import { useTaskCardDate } from '../common/composables'
 import TaskCardViewTicksList from '../modules/tasks/components/TaskCardViewTicksList.vue'
 import TaskCardTags from '../modules/tasks/components/TaskCardTags.vue'
 import TaskCardViewComments from '../modules/tasks/components/TaskCardViewComments.vue'
+import { useTasksStore } from '@/stores'
+
+const tasksStore = useTasksStore()
 
 const router = useRouter()
 const route = useRoute()
-
-const props = defineProps({
-  tasks: {
-    type: Array,
-    required: true
-  }
-})
 
 const dialog = ref(null)
 
@@ -159,7 +118,7 @@ onMounted(() => {
 
 // Найдем задачу по id из массива задач
 const task = computed(() => {
-  return props.tasks.find(task => task.id == route.params.id)
+  return tasksStore.tasks.find(task => task.id == route.params.id)
 })
 
 const dueDate = computed(() => {
@@ -179,7 +138,7 @@ const addCommentToList = function (comment) {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/scss/app.scss";
+@import '@/assets/scss/app.scss';
 
 .task-card {
   position: fixed;
@@ -220,7 +179,7 @@ const addCommentToList = function (comment) {
       width: 100%;
       height: 1px;
 
-      content: "";
+      content: '';
       transition: background-color $animationSpeed;
 
       background-color: $blue-gray-300;
@@ -398,11 +357,11 @@ const addCommentToList = function (comment) {
       width: 14px;
       height: 14px;
 
-      content: "";
+      content: '';
       transition: opacity $animationSpeed;
 
       opacity: 0;
-      background-image: url("~@/assets/img/icon-pencil.svg");
+      background-image: url('~@/assets/img/icon-pencil.svg');
       background-size: cover;
     }
 
@@ -566,5 +525,4 @@ const addCommentToList = function (comment) {
     }
   }
 }
-
 </style>

@@ -1,77 +1,61 @@
 <template>
   <div
-          class="task-card"
-          tabindex="0"
-          ref="dialog"
-          @click.self="closeDialog"
-          @keydown.esc="closeDialog"
+    class="task-card"
+    tabindex="0"
+    ref="dialog"
+    @click.self="closeDialog"
+    @keydown.esc="closeDialog"
   >
     <section class="task-card__wrapper">
       <!--      Кнопка закрытия диалога задачи-->
-      <button
-              class="task-card__close"
-              type="button"
-              @click="closeDialog"
-      />
+      <button class="task-card__close" type="button" @click="closeDialog" />
 
       <!--      Блок ввода имени и удаления задачи-->
       <div class="task-card__block">
         <div class="task-card__row">
           <!--          Поле ввода имени задачи-->
           <input
-                  v-model="task.title"
-                  type="text"
-                  name="task_name"
-                  class="task-card__name"
-                  max="37"
+            v-model="task.title"
+            type="text"
+            name="task_name"
+            class="task-card__name"
+            max="37"
           />
           <!--          Кнопка удаления задачи-->
-          <a
-                  v-if="taskToEdit"
-                  class="task-card__edit task-card__edit--red"
-                  @click="deleteTask"
-          >
+          <a v-if="taskToEdit" class="task-card__edit task-card__edit--red" @click="deleteTask">
             Удалить Задачу
           </a>
         </div>
         <!--        Ошибка валидации поля ввода имени -->
-        <span
-                v-if="validations.title.error"
-                class="task-card__error-text"
-        >
-            {{ validations.title.error }}
+        <span v-if="validations.title.error" class="task-card__error-text">
+          {{ validations.title.error }}
         </span>
       </div>
 
       <!--      Блок статуса задачи-->
       <div class="task-card__status">
-        <h4 class="task-card__title">
-          Выберите статус:
-        </h4>
+        <h4 class="task-card__title">Выберите статус:</h4>
 
         <!--        Список статусов задачи-->
         <ul class="meta-filter task-card__meta">
           <li
-                  v-for="({ value, label }) in statusList"
-                  :key="value"
-                  class="meta-filter__item"
-                  :class="{ active: value === taskStatuses[task.statusId]}"
-                  @click="setStatus(value)"
+            v-for="{ value, label } in statusList"
+            :key="value"
+            class="meta-filter__item"
+            :class="{ active: value === taskStatuses[task.statusId] }"
+            @click="setStatus(value)"
           >
             <a
-                    class="meta-filter__status"
-                    :class="`meta-filter__status--${value}`"
-                    :title="label"
+              class="meta-filter__status"
+              :class="`meta-filter__status--${value}`"
+              :title="label"
             />
           </li>
         </ul>
       </div>
 
       <!--      Блок даты выполнения задачи-->
-      <div
-              v-if="task.id"
-              class="task-card__block"
-      >
+      <div v-if="task.id" class="task-card__block">
         <p class="task-card__date">
           {{ useTaskCardDate(task) }}
         </p>
@@ -81,22 +65,20 @@
       <div class="task-card__block">
         <ul class="task-card__params">
           <!--          Блок выбора пользователя-->
-          <tasks-card-creator-user-selector v-model="task.userId"/>
+          <tasks-card-creator-user-selector v-model="task.userId" />
           <!--          Блок выбора даты выполнения-->
-          <tasks-card-creator-due-date-selector v-model="task.dueDate"/>
+          <tasks-card-creator-due-date-selector v-model="task.dueDate" />
         </ul>
       </div>
 
       <!--      Блок описания задачи-->
       <div class="task-card__block">
         <div class="task-card__description">
-          <h4 class="task-card__title">
-            Описание
-          </h4>
+          <h4 class="task-card__title">Описание</h4>
           <textarea
-                  v-model="task.description"
-                  name="task_description"
-                  placeholder="Добавьте описание к задаче"
+            v-model="task.description"
+            name="task_description"
+            placeholder="Добавьте описание к задаче"
           />
         </div>
       </div>
@@ -104,31 +86,21 @@
       <!--      Блок внешней ссылки-->
       <div class="task-card__block">
         <div class="task-card__links">
-          <h4 class="task-card__title">
-            Ссылки
-          </h4>
+          <h4 class="task-card__title">Ссылки</h4>
 
           <div class="task-card__links-item">
             <!--            Поле ввода ссылки-->
-            <input
-                    v-model="task.url"
-                    type="text"
-                    name="task_link_url"
-                    placeholder="Введите url"
-            />
+            <input v-model="task.url" type="text" name="task_link_url" placeholder="Введите url" />
             <!--            Ошибка валидации поля ввода ссылки-->
-            <span
-                    v-if="validations.url.error"
-                    class="task-card__error-text"
-            >
+            <span v-if="validations.url.error" class="task-card__error-text">
               {{ validations.url.error }}
             </span>
             <!--            Описание ссылки-->
             <input
-                    v-model="task.urlDescription"
-                    type="text"
-                    name="task_link_desc"
-                    placeholder="Добавьте описание к ссылке"
+              v-model="task.urlDescription"
+              type="text"
+              name="task_link_desc"
+              placeholder="Добавьте описание к ссылке"
             />
           </div>
         </div>
@@ -138,37 +110,29 @@
       <div class="task-card__block">
         <!--        Список подзадач-->
         <task-card-view-ticks-list
-                :ticks="task.ticks"
-                @createTick="createTick"
-                @updateTick="updateTick"
-                @removeTick="removeTick"
+          :ticks="task.ticks"
+          @createTick="createTick"
+          @updateTick="updateTick"
+          @removeTick="removeTick"
         />
       </div>
 
       <!--      Блок тегов-->
       <div class="task-card__block">
         <!--        Компонент создания тегов-->
-        <task-card-creator-tags
-                :tags="task.tags"
-                @setTags="setTags"
-        />
+        <task-card-creator-tags :tags="task.tags" @setTags="setTags" />
       </div>
 
       <!--      Блок сохранения и отмены изменений-->
       <div class="task-card__buttons">
         <!--        Кнопка отмены изменений-->
-        <app-button
-                class="button--border"
-                @click="closeDialog"
-        >
-          Отменить
-        </app-button>
+        <app-button class="button--border" @click="closeDialog"> Отменить </app-button>
         <!--        Кнопка сохранения изменений-->
         <app-button
-                class="button--primary"
-                :class="{'button--disabled': !isFormValid}"
-                :disabled="!isFormValid"
-                @click="submit"
+          class="button--primary"
+          :class="{ 'button--disabled': !isFormValid }"
+          :disabled="!isFormValid"
+          @click="submit"
         >
           Сохранить
         </app-button>
@@ -191,6 +155,7 @@ import taskStatuses from '@/common/enums/taskStatuses'
 import { validateFields } from '@/common/validator'
 import { useTaskCardDate } from '@/common/composables'
 import { cloneDeep } from 'lodash'
+import { useTasksStore } from '@/stores'
 
 // Функция для создания новых задач
 const createNewTask = () => ({
@@ -234,12 +199,12 @@ const props = defineProps({
     default: null
   }
 })
-const emits = defineEmits(['addTask', 'editTask', 'deleteTask'])
+
+// Определяем хранилище задач
+const tasksStore = useTasksStore()
 
 // Определяем если мы работаем над редактированием задачи или создаем новую
-const taskToWork = props.taskToEdit ?
-  cloneDeep(props.taskToEdit) :
-  createNewTask()
+const taskToWork = props.taskToEdit ? cloneDeep(props.taskToEdit) : createNewTask()
 
 const task = ref(taskToWork)
 const validations = ref(setEmptyValidations())
@@ -248,29 +213,32 @@ const statusList = ref(STATUSES.slice(0, 3))
 const dialog = ref(null)
 
 // Отслеживаем изменения в задаче чтобы сбросить ошибки валидации
-watch(task, () => {
-  isFormValid.value = true
-  validations.value = setEmptyValidations()
-}, { deep: true })
+watch(
+  task,
+  () => {
+    isFormValid.value = true
+    validations.value = setEmptyValidations()
+  },
+  { deep: true }
+)
 
 onMounted(() => {
   // Фокусируем на диалоговом окне чтобы сработала клавиша esc без дополнительного клика на окне
   dialog.value.focus()
 })
 
-function closeDialog () {
+function closeDialog() {
   // Закрытие диалога всего лишь переход на корневой маршрут
   router.push('/')
 }
 
-function deleteTask () {
-  emits('deleteTask', task.value.id)
+function deleteTask() {
+  tasksStore.deleteTask(task.value.id)
   router.push('/')
 }
 
-function setStatus (status) {
-  const [key] = Object.entries(taskStatuses)
-    .find(([_, value]) => value === status)
+function setStatus(status) {
+  const [key] = Object.entries(taskStatuses).find(([_, value]) => value === status)
   const taskStatus = task.value.statusId
   if (!taskStatus || taskStatus !== +key) {
     task.value.statusId = +key
@@ -279,28 +247,27 @@ function setStatus (status) {
   }
 }
 
-function createTick () {
+function createTick() {
   task.value.ticks.push(createNewTick())
 }
 
 // Используем uuid для новых подзадач, id для существующих
-function updateTick (tick) {
-  const index = task.value.ticks
-    .findIndex(({ uuid, id }) => {
-      if (uuid) {
-        return tick.uuid === uuid
-      }
-      if (id) {
-        return tick.id === id
-      }
-      return false
-    })
+function updateTick(tick) {
+  const index = task.value.ticks.findIndex(({ uuid, id }) => {
+    if (uuid) {
+      return tick.uuid === uuid
+    }
+    if (id) {
+      return tick.id === id
+    }
+    return false
+  })
   if (~index) {
     task.value.ticks.splice(index, 1, tick)
   }
 }
 
-function removeTick ({ uuid, id }) {
+function removeTick({ uuid, id }) {
   if (uuid) {
     task.value.ticks = task.value.ticks.filter(tick => tick.uuid !== uuid)
   }
@@ -309,11 +276,11 @@ function removeTick ({ uuid, id }) {
   }
 }
 
-function setTags (tags) {
+function setTags(tags) {
   task.value.tags = tags
 }
 
-function submit () {
+function submit() {
   // Валидируем задачу
   if (!validateFields(task.value, validations.value)) {
     isFormValid.value = false
@@ -321,10 +288,10 @@ function submit () {
   }
   if (props.taskToEdit) {
     // Редактируемая задача
-    emits('editTask', task.value)
+    tasksStore.editTask(task.value)
   } else {
     // Новая задача
-    emits('addTask', task.value)
+    tasksStore.addTask(task.value)
   }
   // Переход на главную страницу
   router.push('/')
@@ -332,13 +299,13 @@ function submit () {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/scss/app.scss";
+@import '@/assets/scss/app.scss';
 
 .meta-filter {
   display: flex;
   align-items: center;
 
-  $bl: ".meta-filter";
+  $bl: '.meta-filter';
   @include clear-list;
 
   &__item {
@@ -391,7 +358,7 @@ function submit () {
       width: 24px;
       height: 24px;
 
-      background-image: url("~@/assets/img/status-time.svg");
+      background-image: url('~@/assets/img/status-time.svg');
       background-repeat: no-repeat;
       background-size: cover;
     }
@@ -400,7 +367,7 @@ function submit () {
       width: 24px;
       height: 24px;
 
-      background-image: url("~@/assets/img/status-alert.svg");
+      background-image: url('~@/assets/img/status-alert.svg');
       background-repeat: no-repeat;
       background-size: cover;
     }
@@ -451,7 +418,7 @@ function submit () {
       width: 100%;
       height: 1px;
 
-      content: "";
+      content: '';
       transition: background-color $animationSpeed;
 
       background-color: $blue-gray-300;
@@ -750,11 +717,11 @@ function submit () {
     width: 14px;
     height: 14px;
 
-    content: "";
+    content: '';
     transition: opacity $animationSpeed;
 
     opacity: 0;
-    background-image: url("@/assets/img/icon-pencil.svg");
+    background-image: url('@/assets/img/icon-pencil.svg');
     background-size: cover;
   }
 

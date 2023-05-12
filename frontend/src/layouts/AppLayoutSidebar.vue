@@ -1,46 +1,32 @@
 <template>
   <!--  Отслеживает в какую колонку передана задача-->
-  <app-drop
-          class="backlog"
-          :class="{ 'backlog--hide': state.backlogIsHidden }"
-          @drop="moveTask"
-  >
+  <app-drop class="backlog" :class="{ 'backlog--hide': state.backlogIsHidden }" @drop="moveTask">
     <!--  Отвечает за открытие/закрытие беклога-->
-    <button
-            class="backlog__title"
-            @click="state.backlogIsHidden = !state.backlogIsHidden"
-    >
-      <span>
-        Бэклог
-      </span>
+    <button class="backlog__title" @click="state.backlogIsHidden = !state.backlogIsHidden">
+      <span> Бэклог </span>
     </button>
     <div class="backlog__content">
       <div class="backlog__scroll">
         <div class="backlog__collapse">
           <div class="backlog__user">
             <div class="backlog__account">
-              <img
-                      src="@/assets/img/user6.jpg"
-                      alt="Ваш аватар"
-                      width="32"
-                      height="32"
-              />
+              <img src="@/assets/img/user6.jpg" alt="Ваш аватар" width="32" height="32" />
               Игорь Пятин
             </div>
 
             <div class="backlog__counter">
-              {{ sidebarTasks.length }}
+              {{ tasksStore.sidebarTasks.length }}
             </div>
           </div>
 
           <div class="backlog__target-area">
             <!--  Задачи в беклоге-->
             <task-card
-                    v-for="task in sidebarTasks"
-                    :key="task.id"
-                    :task="task"
-                    class="backlog__task"
-                    @drop="moveTask($event, task)"
+              v-for="task in tasksStore.sidebarTasks"
+              :key="task.id"
+              :task="task"
+              class="backlog__task"
+              @drop="moveTask($event, task)"
             />
           </div>
         </div>
@@ -50,30 +36,17 @@
 </template>
 
 <script setup>
-import { reactive, computed } from 'vue'
+import { reactive } from 'vue'
 import AppDrop from '@/common/components/AppDrop.vue'
 import TaskCard from '@/modules/tasks/components/TaskCard.vue'
 import { getTargetColumnTasks, addActive } from '@/common/helpers'
+import { useTasksStore } from '@/stores/tasks'
 
-const props = defineProps({
-  tasks: {
-    type: Array,
-    required: true
-  }
-})
+const tasksStore = useTasksStore()
 
 const state = reactive({ backlogIsHidden: false })
 
-// Фильтруем задачи, которые относятся к беклогу (columnId === null)
-const sidebarTasks = computed(() => {
-  return props.tasks
-    .filter(task => !task.columnId)
-    .sort((a, b) => a.sortOrder - b.sortOrder)
-})
-
-const emits = defineEmits(['updateTasks'])
-
-function moveTask (active, toTask) {
+function moveTask(active, toTask) {
   // Не обновляем массив если задача фактически не перемещалась
   if (toTask && active.id === toTask.id) {
     return
@@ -81,7 +54,7 @@ function moveTask (active, toTask) {
 
   const toColumnId = null
   // Получить задачи для текущей колонки
-  const targetColumnTasks = getTargetColumnTasks(toColumnId, props.tasks)
+  const targetColumnTasks = getTargetColumnTasks(toColumnId, tasksStore.tasks)
   const activeClone = { ...active, columnId: toColumnId }
   // Добавить активную задачу в колонку
   const resultTasks = addActive(activeClone, toTask, targetColumnTasks)
@@ -94,12 +67,12 @@ function moveTask (active, toTask) {
       tasksToUpdate.push(newTask)
     }
   })
-  emits('updateTasks', tasksToUpdate)
+  tasksStore.updateTasks(tasksToUpdate)
 }
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/scss/app.scss";
+@import '@/assets/scss/app.scss';
 
 .backlog {
   display: flex;
@@ -113,7 +86,7 @@ function moveTask (active, toTask) {
 
   background-color: $gray-100;
 
-  $bl: ".backlog";
+  $bl: '.backlog';
 
   &__title {
     position: relative;
@@ -138,11 +111,11 @@ function moveTask (active, toTask) {
       width: 24px;
       height: 24px;
 
-      content: "";
+      content: '';
       transition: $animationSpeed;
       transform: translateY(-53%) rotate(180deg);
 
-      background-image: url("@/assets/img/arrow-right.svg");
+      background-image: url('@/assets/img/arrow-right.svg');
       background-repeat: no-repeat;
       background-position: center;
       background-size: cover;
@@ -256,7 +229,7 @@ function moveTask (active, toTask) {
     border: none;
     outline: none;
     background-color: transparent;
-    background-image: url("@/assets/img/icon-arrow.svg");
+    background-image: url('@/assets/img/icon-arrow.svg');
     background-repeat: no-repeat;
     background-position: center;
 

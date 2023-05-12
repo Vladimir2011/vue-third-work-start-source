@@ -1,40 +1,32 @@
 <template>
   <header class="header">
+    <!--    Логотип-->
     <div class="header__logo">
       <router-link to="/" class="logo">
-        <img
-                src="@/assets/img/logo.svg"
-                alt="VueWork logo"
-                width="147"
-                height="23"
-        />
+        <img src="@/assets/img/logo.svg" alt="VueWork logo" width="147" height="23" />
       </router-link>
     </div>
-
+    <!--    Поиск-->
     <form action="#" class="header__search">
-      <input type="search" name="search" required placeholder="Поиск" />
+      <input
+        type="search"
+        name="search"
+        required
+        placeholder="Поиск"
+        @input="filtersStore.applyFilters({ item: $event.target.value, entity: 'search' })"
+      />
       <button type="submit">Найти</button>
     </form>
-
+    <!--    Кнопка создания новой задачи-->
     <router-link to="/tasks/create" class="header__create-task">Создать карточку</router-link>
-
+    <!--    Аватар пользователя-->
     <a href="#" class="header__user">
-      <img
-              src="@/assets/img/admin.jpg"
-              alt="Администратор"
-              width="40"
-              height="40"
-      />
+      <img src="@/assets/img/admin.jpg" alt="Администратор" width="40" height="40" />
     </a>
-
+    <!--    Панель пользователя-->
     <div class="header__menu">
       <div class="user-menu">
-        <img
-                src="@/assets/img/admin.jpg"
-                width="56"
-                height="56"
-                alt="Администратор"
-        />
+        <img src="@/assets/img/admin.jpg" width="56" height="56" alt="Администратор" />
         <span>Администратор</span>
         <a href="#" class="user-menu__link">Мой аккаунт</a>
         <a href="#" class="user-menu__link">Выйти</a>
@@ -43,8 +35,14 @@
   </header>
 </template>
 
+<script setup>
+import { useFiltersStore } from '@/stores'
+
+const filtersStore = useFiltersStore()
+</script>
+
 <style lang="scss" scoped>
-@import "@/assets/scss/ds-system/ds-system";
+@import '@/assets/scss/ds-system/ds-system';
 
 .header {
   position: relative;
@@ -98,7 +96,7 @@
       border: none;
       outline: none;
       background-color: transparent;
-      background-image: url("@/assets/img/icon-search.svg");
+      background-image: url('@/assets/img/icon-search.svg');
       background-repeat: no-repeat;
       background-size: cover;
     }
@@ -145,9 +143,9 @@
       width: 16px;
       height: 21px;
 
-      content: "";
+      content: '';
 
-      background-image: url("@/assets/img/login.svg");
+      background-image: url('@/assets/img/login.svg');
     }
   }
 
