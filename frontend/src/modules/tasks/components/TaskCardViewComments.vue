@@ -1,22 +1,16 @@
 <template>
   <div class="task-card__comments">
-    <h2 class="task-card__title">
-      Комментарии
-    </h2>
+    <h2 class="task-card__title">Комментарии</h2>
     <div class="comments">
       <!--      Список комментариев-->
       <ul class="comments__list">
-        <li
-                v-for="comment in comments"
-                :key="comment.id"
-                class="comments__item"
-        >
+        <li v-for="comment in comments" :key="comment.id" class="comments__item">
           <div class="comments__user">
             <img
-                    :src="getImage(comment.user.avatar)"
-                    :alt="comment.user.name"
-                    width="30"
-                    height="30"
+              :src="getPublicImage(comment.user.avatar)"
+              :alt="comment.user.name"
+              width="30"
+              height="30"
             />
             {{ comment.user.name }}
           </div>
@@ -25,23 +19,14 @@
       </ul>
 
       <!--      Блок добавления нового комментария-->
-      <form
-              v-if="user"
-              action="#"
-              class="comments__form"
-              method="post"
-      >
+      <form v-if="user" action="#" class="comments__form" method="post">
         <app-textarea
-                v-model="newComment"
-                name="comment_text"
-                placeholder="Введите текст комментария"
-                :error-text="validations.newComment.error"
+          v-model="newComment"
+          name="comment_text"
+          placeholder="Введите текст комментария"
+          :error-text="validations.newComment.error"
         />
-        <app-button
-                class="comments__form__button"
-                :type="'submit'"
-                @click.prevent="submit"
-        >
+        <app-button class="comments__form__button" :type="'submit'" @click.prevent="submit">
           Написать комментарий
         </app-button>
       </form>
@@ -51,20 +36,19 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import users from '@/mocks/users.json'
 import { validateFields, clearValidationErrors } from '../../../common/validator'
 import AppTextarea from '@/common/components/AppTextarea.vue'
 import AppButton from '@/common/components/AppButton.vue'
-import { getImage } from '@/common/helpers'
+import { getPublicImage } from '@/common/helpers'
+import { useAuthStore, useCommentsStore } from '@/stores'
+
+const authStore = useAuthStore()
+const commentsStore = useCommentsStore()
 
 const props = defineProps({
   taskId: {
     type: Number,
     required: true
-  },
-  comments: {
-    type: Array,
-    default: () => []
   }
 })
 
@@ -78,9 +62,10 @@ const validations = ref({
   }
 })
 
-// Позже будет добавлен залогиненый пользователь. До этого будем использовать первого пользователя в списке
-const user = computed(() => users[0])
-
+const user = authStore.user
+const comments = computed(() => {
+  return commentsStore.getCommentsByTaskId(props.taskId)
+})
 // Отслеживаем значение поля комментария и очищаем ошибку при изменении
 watch(newComment, () => {
   if (validations.value.newComment.error) {
@@ -88,30 +73,24 @@ watch(newComment, () => {
   }
 })
 
-const submit = function () {
+const submit = async function () {
   // Проверяем валидно ли поле комментария
   if (!validateFields({ newComment }, validations.value)) return
   // Создаем объект комментария
   const comment = {
     text: newComment.value,
     taskId: props.taskId,
-    userId: user.value.id,
-    user: {
-      id: user.value.id,
-      name: user.value.name,
-      avatar: user.value.avatar
-    }
+    userId: user.id
   }
-  // Отправляем комментарий в родительский компонент
-  emits('createNewComment', comment)
+  // Создаем комментарий
+  await commentsStore.addComment(comment)
   // Очищаем поле комментария
   newComment.value = ''
 }
-
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/scss/app.scss";
+@import '@/assets/scss/app.scss';
 .comments {
   &__list {
     @include clear-list;
