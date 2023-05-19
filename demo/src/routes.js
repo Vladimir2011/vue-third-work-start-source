@@ -18,5 +18,15 @@ export default [
     name: 'Server',
     path: '/server',
     component: () => import('./demo5/Server.vue')
+  },
+  {
+    name: 'Ball',
+    path: '/ball',
+    component: () => import('./demo6/BouncingBall.vue')
+  },
+  {
+    name: 'Balljs',
+    path: '/balljs',
+    component: () => import('./demo6/BouncingBallJavaScript.vue')
   }
 ]
